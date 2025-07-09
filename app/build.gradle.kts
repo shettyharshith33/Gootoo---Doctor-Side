@@ -107,7 +107,10 @@ dependencies {
     implementation (libs.coil.compose)
 
     implementation (libs.androidx.datastore.preferences)
-    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation (libs.androidx.datastore.preferences.v100)
+    implementation(libs.accompanist.placeholder.material)
+    implementation(libs.androidx.core.splashscreen)
+
 
 
 }

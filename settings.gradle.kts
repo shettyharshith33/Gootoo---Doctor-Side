@@ -20,6 +20,6 @@ dependencyResolutionManagement {
 }
 
 
-rootProject.name = "VC Puttur"
+rootProject.name = "Gootoo"
 include(":app")
  
