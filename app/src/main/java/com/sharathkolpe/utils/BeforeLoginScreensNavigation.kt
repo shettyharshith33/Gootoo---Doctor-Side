@@ -31,15 +31,6 @@ object BeforeLoginScreensNavigationObject {
     const val TEACHER_VALIDATION_SCREEN = "teacherValidationScreen"
 
     const val CONFIRM_TEACHER_LOGIN = "confirmTeacherLogin"
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -71,7 +62,7 @@ fun BeforeLoginScreensNavigation(navController: NavController) {
             EmailLinkSentPage(navController)
         }
         composable(route = BeforeLoginScreensNavigationObject.CONFIRM_TEACHER_LOGIN) {
-            ConfirmLogin(onDismiss = {},navController)
+            ConfirmLogin(onDismiss = {}, navController)
         }
 
 

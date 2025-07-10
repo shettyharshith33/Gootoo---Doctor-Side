@@ -614,9 +614,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                     Card(
                                         modifier = Modifier
                                             .clickable {
-                                                navController.navigate(
-                                                    BeforeLoginScreensNavigationObject.BCA
-                                                )
+//                                                navController.navigate(
+//                                                    BeforeLoginScreensNavigationObject.BCA
+//                                                )
                                             }
                                             .width(100.dp)
                                             .height(35.dp),
@@ -633,9 +633,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                             Text(
                                                 "BCA",
                                                 modifier = Modifier.clickable {
-                                                    navController.navigate(
-                                                        BeforeLoginScreensNavigationObject.BCA
-                                                    )
+//                                                    navController.navigate(
+//                                                        BeforeLoginScreensNavigationObject.BCA
+//                                                    )
                                                 },
                                                 fontFamily = poppinsFontFamily,
                                                 fontSize = 12.sp,
@@ -647,9 +647,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                     Card(
                                         modifier = Modifier
                                             .clickable {
-                                                navController.navigate(
-                                                    BeforeLoginScreensNavigationObject.BBA
-                                                )
+//                                                navController.navigate(
+//                                                    BeforeLoginScreensNavigationObject.BBA
+//                                                )
                                             }
                                             .width(100.dp)
                                             .height(35.dp),
@@ -667,9 +667,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                                 "BBA",
                                                 modifier = Modifier
                                                     .clickable {
-                                                        navController.navigate(
-                                                            BeforeLoginScreensNavigationObject.BBA
-                                                        )
+//                                                        navController.navigate(
+//                                                            BeforeLoginScreensNavigationObject.BBA
+//                                                        )
                                                     },
                                                 fontFamily = poppinsFontFamily,
                                                 fontSize = 12.sp,
@@ -680,9 +680,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                     Card(
                                         modifier = Modifier
                                             .clickable {
-                                                navController.navigate(
-                                                    BeforeLoginScreensNavigationObject.BCOM
-                                                )
+//                                                navController.navigate(
+//                                                    BeforeLoginScreensNavigationObject.BCOM
+//                                                )
                                             }
                                             .width(100.dp)
                                             .height(35.dp),
@@ -699,9 +699,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                                 "BCom",
                                                 modifier = Modifier
                                                     .clickable {
-                                                        navController.navigate(
-                                                            BeforeLoginScreensNavigationObject.BCOM
-                                                        )
+//                                                        navController.navigate(
+//                                                            BeforeLoginScreensNavigationObject.BCOM
+//                                                        )
                                                     },
                                                 fontFamily = poppinsFontFamily,
                                                 fontSize = 12.sp,
@@ -719,9 +719,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                     Card(
                                         modifier = Modifier
                                             .clickable {
-                                                navController.navigate(
-                                                    BeforeLoginScreensNavigationObject.BA
-                                                )
+//                                                navController.navigate(
+//                                                    BeforeLoginScreensNavigationObject.BA
+//                                                )
                                             }
                                             .width(100.dp)
                                             .height(35.dp),
@@ -739,9 +739,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                                 "BA",
                                                 modifier = Modifier
                                                     .clickable {
-                                                        navController.navigate(
-                                                            BeforeLoginScreensNavigationObject.BA
-                                                        )
+//                                                        navController.navigate(
+//                                                            BeforeLoginScreensNavigationObject.BA
+//                                                        )
                                                     },
                                                 fontFamily = poppinsFontFamily,
                                                 fontSize = 12.sp,
@@ -754,9 +754,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                     Card(
                                         modifier = Modifier
                                             .clickable {
-                                                navController.navigate(
-                                                    BeforeLoginScreensNavigationObject.BSC
-                                                )
+//                                                navController.navigate(
+//                                                    BeforeLoginScreensNavigationObject.BSC
+//                                                )
                                             }
                                             .width(100.dp)
                                             .height(35.dp),
@@ -773,9 +773,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                             Text(
                                                 "BSc",
                                                 modifier = Modifier.clickable {
-                                                    navController.navigate(
-                                                        BeforeLoginScreensNavigationObject.BSC
-                                                    )
+//                                                    navController.navigate(
+//                                                        BeforeLoginScreensNavigationObject.BSC
+//                                                    )
                                                 },
                                                 fontFamily = poppinsFontFamily,
                                                 fontSize = 12.sp,
