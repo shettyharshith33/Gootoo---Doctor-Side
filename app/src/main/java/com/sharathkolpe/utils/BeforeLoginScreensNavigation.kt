@@ -9,10 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.sharathkolpe.afterLoginScreens.HomeScreen
 import com.sharathkolpe.beforeLoginScreens.AuthCheckScreen
-import com.sharathkolpe.beforeLoginScreens.ConfirmLogin
+//import com.sharathkolpe.beforeLoginScreens.ConfirmLogin
 import com.sharathkolpe.beforeLoginScreens.EmailLinkSentPage
 import com.sharathkolpe.beforeLoginScreens.OnBoardingScreen
 import com.sharathkolpe.beforeLoginScreens.SignUpScreen
+import com.sharathkolpe.unused.OtpRequestPage
+import com.sharathkolpe.unused.OtpVerificationPage
 
 object BeforeLoginScreensNavigationObject {
     const val AUTH_CHECK = "authCheck"
@@ -25,7 +27,6 @@ object BeforeLoginScreensNavigationObject {
     const val EMAIL_LINK_SENT_PAGE = "emailLinkSentPage"
     const val CGPA_CALCULATOR_SCREEN = "cgpaCalculatorScreen"
     const val ADMISSIONS_SCREEN = "admissionsScreen"
-    const val ACADEMICS_SCREEN = "academicsScreen"
     const val DEPARTMENTS = "departments"
 
     const val TEACHER_VALIDATION_SCREEN = "teacherValidationScreen"
@@ -43,6 +44,20 @@ fun BeforeLoginScreensNavigation(navController: NavController) {
         navController = navController,
         startDestination = BeforeLoginScreensNavigationObject.ONBOARDING_SCREEN
     ) {
+
+        composable(BeforeLoginScreensNavigationObject.OTP_REQUEST_PAGE) {
+            OtpRequestPage()
+        }
+//        composable(BeforeLoginScreensNavigationObject.OTP_VERIFICATION_PAGE) {
+//            OtpVerificationPage(navController, verificationId = "")
+//        }
+
+        composable("otp_verify/{verificationId}") { backStackEntry ->
+            val verificationId = backStackEntry.arguments?.getString("verificationId")
+            OtpVerificationPage(navController, verificationId)
+        }
+
+
         composable(BeforeLoginScreensNavigationObject.AUTH_CHECK) {
             AuthCheckScreen(navController)
         }
@@ -61,9 +76,9 @@ fun BeforeLoginScreensNavigation(navController: NavController) {
         composable(route = BeforeLoginScreensNavigationObject.EMAIL_LINK_SENT_PAGE) {
             EmailLinkSentPage(navController)
         }
-        composable(route = BeforeLoginScreensNavigationObject.CONFIRM_TEACHER_LOGIN) {
-            ConfirmLogin(onDismiss = {}, navController)
-        }
+//        composable(route = BeforeLoginScreensNavigationObject.CONFIRM_TEACHER_LOGIN) {
+//            ConfirmLogin(onDismiss = {}, navController)
+//        }
 
 
     }

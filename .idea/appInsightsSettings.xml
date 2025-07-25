@@ -17,10 +17,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.sharathkolpe.gootoo" />
+                  <option name="mobileSdkAppId" value="1:704017927695:android:2c63bc3f490cb3b3a39d7a" />
+                  <option name="projectId" value="gootoo-13293" />
+                  <option name="projectNumber" value="704017927695" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

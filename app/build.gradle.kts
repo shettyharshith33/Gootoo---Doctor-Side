@@ -111,6 +111,18 @@ dependencies {
     implementation(libs.accompanist.placeholder.material)
     implementation(libs.androidx.core.splashscreen)
 
+    implementation("com.google.firebase:firebase-appcheck-playintegrity:18.0.0")
+    implementation("com.google.firebase:firebase-appcheck-debug:18.0.0")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation("com.google.android.gms:play-services-auth-api-phone:18.2.0")
+
+    implementation("com.google.firebase:firebase-storage-ktx:21.0.2")
+
+
+
+
+
+
 
 
 }

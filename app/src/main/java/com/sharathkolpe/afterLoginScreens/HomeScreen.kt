@@ -468,7 +468,7 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                 modifier = Modifier
                                     .size(100.dp)
                                     .clickable {
-                                        navController.navigate(BeforeLoginScreensNavigationObject.ACADEMICS_SCREEN)
+//                                        navController.navigate(BeforeLoginScreensNavigationObject.)
                                     },
                                 colors = CardDefaults.cardColors().copy(
                                     containerColor = signInGrey
@@ -485,9 +485,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                         modifier = Modifier
                                             .size(60.dp)
                                             .clickable {
-                                                navController.navigate(
-                                                    BeforeLoginScreensNavigationObject.ACADEMICS_SCREEN
-                                                )
+//                                                navController.navigate(
+//                                                    BeforeLoginScreensNavigationObject.ACADEMICS_SCREEN
+//                                                )
                                             },
                                         alignment = Alignment.Center
                                     )
@@ -495,9 +495,9 @@ fun HomeScreen(navController: NavController,viewModel: NetworkViewModel)
                                         "Academics",
                                         modifier = Modifier
                                             .clickable {
-                                                navController.navigate(
-                                                    BeforeLoginScreensNavigationObject.ACADEMICS_SCREEN
-                                                )
+//                                                navController.navigate(
+//                                                    BeforeLoginScreensNavigationObject.ACADEMICS_SCREEN
+//                                                )
                                             },
                                         fontFamily = poppinsFontFamily,
                                         fontSize = 12.sp,
