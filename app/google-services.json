@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "704017927695",
+    "project_id": "gootoo-13293",
+    "storage_bucket": "gootoo-13293.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704017927695:android:2c63bc3f490cb3b3a39d7a",
+        "android_client_info": {
+          "package_name": "com.sharathkolpe.gootoo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpikNqqexRClXjknvg5v5cNASqLEZXfOs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
