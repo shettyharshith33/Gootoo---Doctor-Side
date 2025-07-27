@@ -1,12 +1,12 @@
 
-package com.sharathkolpe.gootoo.ui.theme
+package com.sharathkolpe.gootooDS.ui.theme
 
 
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import com.sharathkolpe.gootoo.R
+import com.sharathkolpe.gootooDS.R
 
 val poppinsFontFamily = FontFamily(
     Font(R.font.poppins_italic,FontWeight.Normal, FontStyle.Italic),

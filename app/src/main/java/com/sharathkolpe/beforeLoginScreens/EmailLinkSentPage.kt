@@ -16,10 +16,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.*
 import com.google.firebase.auth.FirebaseAuth
-import com.sharathkolpe.gootoo.R
+import com.sharathkolpe.gootooDS.R
 import com.sharathkolpe.utils.BeforeLoginScreensNavigationObject
-import com.sharathkolpe.gootoo.ui.theme.newGreen
-import com.sharathkolpe.gootoo.ui.theme.themeBlue
+import com.sharathkolpe.gootooDS.ui.theme.newGreen
+import com.sharathkolpe.gootooDS.ui.theme.themeBlue
 
 @Composable
 fun EmailLinkSentPage(navController: NavController) {

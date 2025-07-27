@@ -1,4 +1,4 @@
-
+import com.sharathkolpe.gootooDS.R
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -41,9 +41,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -54,27 +58,28 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.firebase.auth.FirebaseAuth
-import com.sharathkolpe.gootoo.R
+import com.google.firebase.firestore.FirebaseFirestore
 import com.sharathkolpe.beforeLoginScreens.showMsg
 import com.sharathkolpe.beforeLoginScreens.triggerVibration
 import com.sharathkolpe.firebaseAuth.AuthUser
 import com.sharathkolpe.utils.BeforeLoginScreensNavigationObject
 import com.sharathkolpe.utils.ResultState
-import com.sharathkolpe.gootoo.ui.theme.dodgerBlue
-import com.sharathkolpe.gootoo.ui.theme.myGreen
-import com.sharathkolpe.gootoo.ui.theme.netWorkRed
-import com.sharathkolpe.gootoo.ui.theme.poppinsFontFamily
-import com.sharathkolpe.gootoo.ui.theme.textColor
+import com.sharathkolpe.gootooDS.ui.theme.dodgerBlue
+import com.sharathkolpe.gootooDS.ui.theme.gootooThemeBlue
+import com.sharathkolpe.gootooDS.ui.theme.myGreen
+import com.sharathkolpe.gootooDS.ui.theme.netWorkRed
+import com.sharathkolpe.gootooDS.ui.theme.poppinsFontFamily
+import com.sharathkolpe.gootooDS.ui.theme.textColor
 import com.sharathkolpe.viewmodels.AuthViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun LoginScreen(
     navController: NavController,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login_animation_2))
     var loginEmail by remember { mutableStateOf("") }
     var loginPassword by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
@@ -95,7 +100,6 @@ fun LoginScreen(
             CircularProgressIndicator()
         }
     }
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -107,55 +111,50 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            Spacer(modifier = Modifier.height(screenHeight * 0.08f))
-
+            Spacer(modifier = Modifier.height(screenHeight * 0.2f))
             Text(
-                "Vivekananda College of",
-                fontSize = (screenWidth.value * 0.05f).sp,
-                color = dodgerBlue,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                "Arts, Science and Commerce",
-                fontSize = (screenWidth.value * 0.05f).sp,
-                color = dodgerBlue,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                "(Autonomous)",
-                fontSize = (screenWidth.value * 0.04f).sp,
-                color = dodgerBlue,
-                fontFamily = poppinsFontFamily,
-                fontWeight = FontWeight.Bold
-            )
+                buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = poppinsFontFamily,
+                            fontSize = 35.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    ) {
+                        append("Goo")
+                    }
 
-            Spacer(modifier = Modifier.height(screenHeight * 0.02f))
 
-            LottieAnimation(
-                composition = composition,
-                modifier = Modifier.size(screenWidth * 0.5f),
-                iterations = LottieConstants.IterateForever
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = poppinsFontFamily,
+                            color = gootooThemeBlue,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 35.sp
+                        )
+                    ) {
+                        append("too")
+                    }
+                }, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
             )
+            Spacer(modifier = Modifier.height(screenHeight * 0.05f))
             Text(
                 "Login",
                 fontSize = 30.sp,
-                color = dodgerBlue,
+                color = gootooThemeBlue,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(20.dp))
-
+            Spacer(modifier = Modifier.height(screenHeight * 0.03f))
             Text(
                 "Enter your e-mail",
                 fontSize = 15.sp,
-                color = dodgerBlue,
+                color = gootooThemeBlue,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.W500
             )
             Spacer(modifier = Modifier.height(10.dp))
-
             OutlinedTextField(
                 modifier = Modifier
                     .border(0.5.dp, textColor, shape = RoundedCornerShape(5.dp))
@@ -166,8 +165,8 @@ fun LoginScreen(
                 onValueChange = { loginEmail = it },
                 placeholder = { Text("E-mail") },
                 colors = TextFieldDefaults.colors(
-                    unfocusedIndicatorColor = if (emailError) Color.Red else dodgerBlue,
-                    focusedIndicatorColor = if (emailError) Color.Red else dodgerBlue
+                    unfocusedIndicatorColor = if (emailError) Color.Red else gootooThemeBlue,
+                    focusedIndicatorColor = if (emailError) Color.Red else gootooThemeBlue
                 )
             )
 
@@ -175,7 +174,7 @@ fun LoginScreen(
             Text(
                 "Enter your password",
                 fontSize = 15.sp,
-                color = dodgerBlue,
+                color = gootooThemeBlue,
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.W500
             )
@@ -190,24 +189,25 @@ fun LoginScreen(
                 onValueChange = { loginPassword = it },
                 placeholder = { Text("Password") },
                 visualTransformation =
-                if (passwordVisible)
-                    VisualTransformation.None
-                else {
-                    PasswordVisualTransformation()
-                },
+                    if (passwordVisible)
+                        VisualTransformation.None
+                    else {
+                        PasswordVisualTransformation()
+                    },
                 trailingIcon = {
                     val icon = if (passwordVisible)
-                        R.drawable.visibilty
+                        R.drawable.visible
                     else
-                        R.drawable.visibilty_off
+                        R.drawable.invisible
 
-                    Image(painterResource(icon), contentDescription = "",
+                    Image(
+                        painterResource(icon), contentDescription = "",
                         modifier = Modifier.clickable { passwordVisible = !passwordVisible })
                 },
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
-                    unfocusedIndicatorColor = if (passwordError) Color.Red else dodgerBlue,
-                    focusedIndicatorColor = if (passwordError) Color.Red else dodgerBlue
+                    unfocusedIndicatorColor = if (passwordError) Color.Red else gootooThemeBlue,
+                    focusedIndicatorColor = if (passwordError) Color.Red else gootooThemeBlue
                 )
             )
 
@@ -233,11 +233,14 @@ fun LoginScreen(
                     }
                     scope.launch(Dispatchers.Main) {
                         viewModel.loginUser(AuthUser(loginEmail, loginPassword)).collect { result ->
+
+
+
+
                             isDialog = when (result) {
                                 is ResultState.Success -> {
                                     val firebaseUser = FirebaseAuth.getInstance().currentUser
                                     if (firebaseUser != null && firebaseUser.isEmailVerified) {
-                                        // Store user role as student in SharedPreferences
                                         sharedPreferences.edit()
                                             .putString("user_role", "student")
                                             .apply()
@@ -245,8 +248,22 @@ fun LoginScreen(
                                         Handler(Looper.getMainLooper()).post {
                                             showColoredToast(context, "Login Successful", true)
                                         }
-                                        navController.navigate(BeforeLoginScreensNavigationObject.HOME_SCREEN) {
-                                            popUpTo(0)
+
+                                        scope.launch {
+                                            val uid = firebaseUser.uid
+                                            val profileExists = doesDoctorProfileExist(uid)
+
+                                            if (profileExists) {
+                                                navController.navigate(
+                                                    BeforeLoginScreensNavigationObject.HOME_SCREEN)
+                                                {
+                                                    popUpTo(0)
+                                                }
+                                            } else {
+                                                navController.navigate(BeforeLoginScreensNavigationObject.DOCTOR_PROFILE_SCREEN) {
+                                                    popUpTo(0)
+                                                }
+                                            }
                                         }
                                     } else {
                                         Handler(Looper.getMainLooper()).post {
@@ -274,37 +291,65 @@ fun LoginScreen(
 
                                 is ResultState.Loading -> true
                             }
+
+
+
+
+
+
+
+                            //                            isDialog = when (result) {
+//                                is ResultState.Success -> {
+//                                    val firebaseUser = FirebaseAuth.getInstance().currentUser
+//                                    if (firebaseUser != null && firebaseUser.isEmailVerified) {
+//                                        // Store user role as student in SharedPreferences
+//                                        sharedPreferences.edit()
+//                                            .putString("user_role", "student")
+//                                            .apply()
+//
+//                                        Handler(Looper.getMainLooper()).post {
+//                                            showColoredToast(context, "Login Successful", true)
+//                                        }
+//                                        navController.navigate(BeforeLoginScreensNavigationObject.DOCTOR_PROFILE_SCREEN) {
+//                                            popUpTo(0)
+//                                        }
+//                                    } else {
+//                                        Handler(Looper.getMainLooper()).post {
+//                                            showColoredToast(context, "Email not verified", false)
+//                                        }
+//                                        FirebaseAuth.getInstance().signOut()
+//                                        sharedPreferences.edit().clear().apply()
+//                                    }
+//                                    false
+//                                }
+//
+//                                is ResultState.Failure -> {
+//                                    val errorMsg = result.msg.toString().lowercase()
+//                                    val errorMessage = when {
+//                                        "password is invalid" in errorMsg -> "Incorrect Password"
+//                                        "no user record" in errorMsg || "there is no user" in errorMsg -> "Email Not Registered"
+//                                        "network error" in errorMsg -> "Check Your Internet Connection 🌐"
+//                                        else -> "Email or Password is Incorrect"
+//                                    }
+//                                    Handler(Looper.getMainLooper()).post {
+//                                        showColoredToast(context, errorMessage, false)
+//                                    }
+//                                    false
+//                                }
+//
+//                                is ResultState.Loading -> true
+//                            }
                         }
                     }
                 },
                 modifier = Modifier.width(150.dp),
-                colors = ButtonDefaults.buttonColors().copy(containerColor = dodgerBlue)
+                colors = ButtonDefaults.buttonColors().copy(containerColor = gootooThemeBlue)
             ) {
                 Text("Login", color = Color.White)
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 fun showColoredToast(context: Context, message: String, isSuccess: Boolean) {
@@ -348,8 +393,6 @@ fun resetPassword(context: Context, email: String) {
 }
 
 
-
-
 @Composable
 fun ShowForgotPasswordDialog(
     context: Context,
@@ -387,6 +430,17 @@ fun ShowForgotPasswordDialog(
         }
     )
 }
+
+
+suspend fun doesDoctorProfileExist(uid: String): Boolean {
+    val doc = FirebaseFirestore.getInstance()
+        .collection("doctors")
+        .document(uid)
+        .get()
+        .await()
+    return doc.exists()
+}
+
 
 
 

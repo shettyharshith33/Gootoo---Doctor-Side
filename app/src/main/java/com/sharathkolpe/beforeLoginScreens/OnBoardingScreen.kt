@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
@@ -69,9 +70,9 @@ import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderF
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.sharathkolpe.gootoo.R
-import com.sharathkolpe.gootoo.ui.theme.gootooThemeBlue
-import com.sharathkolpe.gootoo.ui.theme.poppinsFontFamily
+import com.sharathkolpe.gootooDS.ui.theme.gootooThemeBlue
+import com.sharathkolpe.gootooDS.ui.theme.poppinsFontFamily
+import com.sharathkolpe.gootooDS.R
 import com.sharathkolpe.utils.BeforeLoginScreensNavigationObject
 import com.sharathkolpe.utils.GoogleAuthUIClient
 import com.sharathkolpe.viewmodels.AuthViewModel
@@ -122,37 +123,7 @@ fun OnBoardingScreen(
 
     var confirmLogin by remember { mutableStateOf(false) }
 
-//    val launcher = rememberLauncherForActivityResult(
 
-//        contract = ActivityResultContracts.StartIntentSenderForResult()
-//    ) { result ->
-//        scope.launch {
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                val credential = googleAuthUIClient.signInWithIntent(result.data!!)
-//                val idToken = credential?.googleIdToken
-//                if (idToken != null) {
-//                    viewModel.signInWithGoogle(idToken) { isSuccess ->
-//                        isSigningIn.value = false
-//                        if (isSuccess) {
-//                            Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-//                            navController.navigate(BeforeLoginScreensNavigationObject.HOME_SCREEN) {
-//                                popUpTo("onboarding_screen") { inclusive = true }
-//                            }
-//                        } else {
-//                            Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                } else {
-//                    isSigningIn.value = false
-//                    Toast.makeText(context, "Sign-in cancelled", Toast.LENGTH_SHORT).show()
-//                }
-//            } else {
-//                isSigningIn.value = false
-//                Toast.makeText(context, "Sign-in cancelled", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
-//
     //Top Screen Text and Various Buttons for Login And Signup
     Column(
         modifier = Modifier
@@ -185,7 +156,7 @@ fun OnBoardingScreen(
                         fontSize = 35.sp
                     )
                 ) {
-                    append("too")
+                    append("too - Doctor App")
                 }
             }, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
         )
@@ -294,6 +265,23 @@ fun OnBoardingScreen(
                         }
                         .shimmer()
                 )
+                Spacer(modifier = Modifier.height(screenHeight * 0.03f))
+                Box(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(10.dp))
+                        .background(gootooThemeBlue)
+                        .fillMaxWidth(.7f)
+                        .clickable { navController.navigate(BeforeLoginScreensNavigationObject.LOGIN_SCREEN) },
+                    contentAlignment = Alignment.Center
+                )
+                {
+                    Text(
+                        "Login with Email and Password",
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }

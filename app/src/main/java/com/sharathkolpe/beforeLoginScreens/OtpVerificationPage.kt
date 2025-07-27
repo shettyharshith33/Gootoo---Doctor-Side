@@ -24,8 +24,8 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
-import com.sharathkolpe.gootoo.ui.theme.gootooThemeBlue
-import com.sharathkolpe.gootoo.ui.theme.poppinsFontFamily
+import com.sharathkolpe.gootooDS.ui.theme.gootooThemeBlue
+import com.sharathkolpe.gootooDS.ui.theme.poppinsFontFamily
 import com.sharathkolpe.utils.BeforeLoginScreensNavigationObject
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.delay
@@ -50,7 +50,8 @@ fun OtpVerificationPage(navController: NavController, verificationId: String?) {
         // Delay navigation for 3 seconds
         LaunchedEffect(Unit) {
             delay(5000)
-            navController.navigate(BeforeLoginScreensNavigationObject.HOME_SCREEN) {
+            navController.navigate(BeforeLoginScreensNavigationObject.HOME_SCREEN)
+            {
                 popUpTo(0) // Optional: clears backstack
             }
         }
@@ -122,7 +123,7 @@ fun VerifiedAnimation() {
 
 
         val lottieUrl =
-            "https://firebasestorage.googleapis.com/v0/b/gootoo-13293.firebasestorage.app/o/Animations%2Fotp_veriied.json?alt=media&token=32797062-eedc-48f8-82b3-2d88ed197ce5"
+            "https://firebasestorage.googleapis.com/v0/b/gootoo-13293.firebasestorage.app/o/Animations%2Fapp_successful.json?alt=media&token=6443a213-4835-4043-bdd4-cd0054b7e3a3"
         val composition by rememberLottieComposition(LottieCompositionSpec.Url(lottieUrl))
 
 

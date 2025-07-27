@@ -6,6 +6,7 @@ package com.sharathkolpe.beforeLoginScreens
 
 //Necessary Imports
 import android.content.Context
+import com.sharathkolpe.gootooDS.R
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,22 +52,26 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.sharathkolpe.gootoo.R
 import com.sharathkolpe.firebaseAuth.AuthUser
+import com.sharathkolpe.gootooDS.ui.theme.dodgerBlue
+import com.sharathkolpe.gootooDS.ui.theme.gootooThemeBlue
+import com.sharathkolpe.gootooDS.ui.theme.myGreen
+import com.sharathkolpe.gootooDS.ui.theme.netWorkRed
+import com.sharathkolpe.gootooDS.ui.theme.poppinsFontFamily
 import com.sharathkolpe.utils.BeforeLoginScreensNavigationObject
 import com.sharathkolpe.utils.ResultState
-import com.sharathkolpe.gootoo.ui.theme.dodgerBlue
-import com.sharathkolpe.gootoo.ui.theme.myGreen
-import com.sharathkolpe.gootoo.ui.theme.netWorkRed
-import com.sharathkolpe.gootoo.ui.theme.poppinsFontFamily
 import com.sharathkolpe.viewmodels.AuthViewModel
 import com.sharathkolpe.viewmodels.NetworkViewModel
 import kotlinx.coroutines.Dispatchers
@@ -105,62 +111,57 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(screenHeight * 0.08f))
-
-        //NetworkStatusBanner(isConnected = true)
-
-        Spacer(modifier = Modifier.height(10.dp))
-
         //College Name Header Text
 
+        Spacer(modifier = Modifier.height(screenHeight * 0.2f))
         Text(
-            "Vivekananda College of",
-            fontSize = 20.sp,
-            color = dodgerBlue,
-            fontFamily = poppinsFontFamily,
-            fontWeight = FontWeight.Bold
+            buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        fontFamily = poppinsFontFamily,
+                        fontSize = 35.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                ) {
+                    append("Goo")
+                }
+
+
+                withStyle(
+                    style = SpanStyle(
+                        fontFamily = poppinsFontFamily,
+                        color = gootooThemeBlue,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 35.sp
+                    )
+                ) {
+                    append("too")
+                }
+            }, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
         )
+        Spacer(modifier = Modifier.height(screenHeight * 0.05f))
         Text(
-            "Arts, Science and Commerce",
-            fontSize = 20.sp,
-            fontFamily = poppinsFontFamily,
-            color = dodgerBlue,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            "(Autonomous)",
-            fontSize = 15.sp,
-            fontFamily = poppinsFontFamily,
-            color = dodgerBlue,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Image(
-            modifier = Modifier.size(80.dp),
-            painter = painterResource(R.drawable.collegelogo), //College Logo Composable
-            contentDescription = ""
-        )
-        Spacer(modifier = Modifier.height(50.dp))
-        Text(
-            "Sign Up",
-            fontFamily = poppinsFontFamily,
+            "Sign-Up",
             fontSize = 30.sp,
-            color = dodgerBlue,
+            color = gootooThemeBlue,
+            fontFamily = poppinsFontFamily,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(50.dp))
+
+        Spacer(modifier = Modifier.height(screenHeight * 0.03f))
         Text(
             "Enter your E-mail",
             fontSize = 15.sp,
             fontFamily = poppinsFontFamily,
-            color = dodgerBlue,
+            color = gootooThemeBlue,
             fontWeight = FontWeight.W500
         )
         Spacer(modifier = Modifier.height(10.dp))
         OutlinedTextField(      //Text Field for Accepting Email
             modifier = Modifier
                 .border(
-                    0.5.dp, dodgerBlue,
+                    0.5.dp, gootooThemeBlue,
                     shape = RoundedCornerShape(5.dp)
                 )
                 .height(52.dp)
@@ -173,8 +174,8 @@ fun SignUpScreen(
             },
             placeholder = { Text("E-mail") },
             colors = TextFieldDefaults.colors(
-                unfocusedIndicatorColor = if (emailError) Color.Red else dodgerBlue,
-                focusedIndicatorColor = if (emailError) Color.Red else dodgerBlue
+                unfocusedIndicatorColor = if (emailError) Color.Red else gootooThemeBlue,
+                focusedIndicatorColor = if (emailError) Color.Red else gootooThemeBlue
             )
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -183,14 +184,14 @@ fun SignUpScreen(
             "Create a password",
             fontSize = 15.sp,
             fontFamily = poppinsFontFamily,
-            color = dodgerBlue,
+            color = gootooThemeBlue,
             fontWeight = FontWeight.W500
         )
         Spacer(modifier = Modifier.height(10.dp))
         OutlinedTextField(      //Text Field for Accepting Password
             modifier = Modifier
                 .border(
-                    0.5.dp, dodgerBlue,
+                    0.5.dp, gootooThemeBlue,
                     shape = RoundedCornerShape(5.dp)
                 )
                 .height(52.dp)
@@ -203,23 +204,23 @@ fun SignUpScreen(
             maxLines = 1,
             placeholder = { Text("Password") },
             visualTransformation =
-            if (passwordVisible)
-                VisualTransformation.None
-            else {
-                PasswordVisualTransformation()
-            },
+                if (passwordVisible)
+                    VisualTransformation.None
+                else {
+                    PasswordVisualTransformation()
+                },
             trailingIcon = {
                 val icon = if (passwordVisible)
-                    R.drawable.visibilty            //Password Visibility Button / Icon   -   Eye Open
+                    R.drawable.visible            //Password Visibility Button / Icon   -   Eye Open
                 else
-                    R.drawable.visibilty_off       //Password Visibility Button / Icon   -   Eye Closed
+                    R.drawable.invisible       //Password Visibility Button / Icon   -   Eye Closed
 
                 Image(painterResource(icon), contentDescription = "",
                     modifier = Modifier.clickable { passwordVisible = !passwordVisible })
             },
             colors = TextFieldDefaults.colors(
-                unfocusedIndicatorColor = if (passwordError) Color.Red else dodgerBlue,
-                focusedIndicatorColor = if (passwordError) Color.Red else dodgerBlue
+                unfocusedIndicatorColor = if (passwordError) Color.Red else gootooThemeBlue,
+                focusedIndicatorColor = if (passwordError) Color.Red else gootooThemeBlue
             )
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -227,7 +228,7 @@ fun SignUpScreen(
         Button(
             onClick = {
                 if (eMail.isEmpty() || password.isEmpty()) {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     emailError = true
                     passwordError = true
                     context.showMsg("Email and Password cannot be empty")       //Haptic Feedback To Warn User to Fill Out All Fields
@@ -266,7 +267,7 @@ fun SignUpScreen(
                     }
                 }
             },
-            colors = ButtonDefaults.buttonColors().copy(containerColor = dodgerBlue)
+            colors = ButtonDefaults.buttonColors().copy(containerColor = gootooThemeBlue)
         ) {
             Text(
                 "Create Account",

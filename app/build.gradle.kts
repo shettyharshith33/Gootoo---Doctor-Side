@@ -15,11 +15,11 @@ plugins {
 }
 
 android {
-    namespace = "com.sharathkolpe.gootoo"
+    namespace = "com.sharathkolpe.gootooDS"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.sharathkolpe.gootoo"
+        applicationId = "com.sharathkolpe.gootooDS"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

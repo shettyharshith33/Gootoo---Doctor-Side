@@ -1,4 +1,4 @@
-package com.sharathkolpe.gootoo
+package com.sharathkolpe.gootooDS
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

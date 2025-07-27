@@ -1,4 +1,4 @@
-package com.sharathkolpe.gootoo.ui.theme
+package com.sharathkolpe.gootooDS.ui.theme
 
 import android.app.Activity
 import android.os.Build

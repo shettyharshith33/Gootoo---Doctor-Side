@@ -1,12 +1,16 @@
 package com.sharathkolpe.utils
 
 import LoginScreen
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.doctorapp.ui.DoctorProfileScreen
+import com.sharathkolpe.afterLoginScreens.EditDoctorProfileScreen
 import com.sharathkolpe.afterLoginScreens.HomeScreen
 import com.sharathkolpe.beforeLoginScreens.AuthCheckScreen
 //import com.sharathkolpe.beforeLoginScreens.ConfirmLogin
@@ -25,9 +29,14 @@ object BeforeLoginScreensNavigationObject {
     const val LOGIN_SCREEN = "loginScreen"
     const val HOME_SCREEN = "homeScreen"
     const val EMAIL_LINK_SENT_PAGE = "emailLinkSentPage"
+
+    const val DOCTOR_PROFILE_SCREEN = "doctorProfileScreen"
+
+    const val EDIT_DOCTOR_PROFILE_SCREEN = "editDoctorProfileScreen"
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BeforeLoginScreensNavigation(navController: NavController) {
     val navController = rememberNavController()
@@ -35,9 +44,10 @@ fun BeforeLoginScreensNavigation(navController: NavController) {
 
     NavHost(
         navController = navController,
-        startDestination = BeforeLoginScreensNavigationObject.ONBOARDING_SCREEN
+        startDestination = BeforeLoginScreensNavigationObject.HOME_SCREEN
     ) {
-        composable(BeforeLoginScreensNavigationObject.OTP_REQUEST_PAGE) {
+        composable(BeforeLoginScreensNavigationObject.OTP_REQUEST_PAGE)
+        {
             OtpRequestPage()
         }
 
@@ -63,11 +73,19 @@ fun BeforeLoginScreensNavigation(navController: NavController) {
         }
 
         composable(route = BeforeLoginScreensNavigationObject.HOME_SCREEN) {
-            HomeScreen(navController, viewModel = viewModel())
+            HomeScreen(navController)
         }
 
         composable(route = BeforeLoginScreensNavigationObject.EMAIL_LINK_SENT_PAGE) {
             EmailLinkSentPage(navController)
+        }
+
+        composable(route = BeforeLoginScreensNavigationObject.DOCTOR_PROFILE_SCREEN) {
+            DoctorProfileScreen(navController)
+        }
+
+        composable(route = BeforeLoginScreensNavigationObject.EDIT_DOCTOR_PROFILE_SCREEN) {
+            EditDoctorProfileScreen(navController)
         }
 
 

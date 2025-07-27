@@ -7,7 +7,7 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.sharathkolpe.gootoo.R
+import com.sharathkolpe.gootooDS.R
 import kotlinx.coroutines.tasks.await
 
 class GoogleAuthUIClient(
