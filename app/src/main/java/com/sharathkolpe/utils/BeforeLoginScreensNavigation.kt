@@ -44,7 +44,7 @@ fun BeforeLoginScreensNavigation(navController: NavController) {
 
     NavHost(
         navController = navController,
-        startDestination = BeforeLoginScreensNavigationObject.HOME_SCREEN
+        startDestination = BeforeLoginScreensNavigationObject.ONBOARDING_SCREEN
     ) {
         composable(BeforeLoginScreensNavigationObject.OTP_REQUEST_PAGE)
         {

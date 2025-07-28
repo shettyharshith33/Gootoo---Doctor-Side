@@ -103,7 +103,6 @@ fun OnBoardingScreen(
 
     var loadingAnimation by remember { mutableStateOf(false) }
 
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.splash_screen))
     var mobileNum by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()

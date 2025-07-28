@@ -1,6 +1,7 @@
 package com.example.doctorapp.ui
 
-import android.app.Activity
+import android.app.TimePickerDialog
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -8,10 +9,40 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
@@ -28,16 +60,26 @@ import com.google.firebase.storage.FirebaseStorage
 import com.sharathkolpe.utils.BeforeLoginScreensNavigationObject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
+
+suspend fun uploadImageToStorage(uid: String, imageUri: Uri): String {
+    val ref = FirebaseStorage.getInstance().reference.child("doctor_profile_pics/$uid.jpg")
+    ref.putFile(imageUri).await()
+    return ref.downloadUrl.await().toString()
+}
+
+
 
 @Composable
 fun DoctorProfileScreen(navController: NavController) {
     val context = LocalContext.current
     val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
     val scope = rememberCoroutineScope()
 
-
-    // States
+    // Doctor Info States
     var name by remember { mutableStateOf(TextFieldValue("")) }
     var specialization by remember { mutableStateOf(TextFieldValue("")) }
     var clinicName by remember { mutableStateOf(TextFieldValue("")) }
@@ -47,6 +89,14 @@ fun DoctorProfileScreen(navController: NavController) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var isUploading by remember { mutableStateOf(false) }
 
+    // Availability State
+    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    val availabilityMap = remember {
+        daysOfWeek.associateWith {
+            mutableStateOf(mapOf("morning" to "Not Set", "afternoon" to "Not Set"))
+        }
+    }
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
         imageUri = it
     }
@@ -54,16 +104,15 @@ fun DoctorProfileScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.TopCenter
     ) {
         if (isUploading) {
             CircularProgressIndicator()
         } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
                 Box(
                     modifier = Modifier
                         .size(120.dp)
@@ -82,96 +131,89 @@ fun DoctorProfileScreen(navController: NavController) {
                             contentScale = ContentScale.Crop
                         )
                     } else {
-                        Text("Upload", color = Color.DarkGray)
+                        Text("Upload Image", color = Color.DarkGray)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = specialization, onValueChange = { specialization = it }, label = { Text("Specialization") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = qualification, onValueChange = { qualification = it }, label = { Text("Qualification") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = experience, onValueChange = { experience = it }, label = { Text("Experience") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = clinicName, onValueChange = { clinicName = it }, label = { Text("Clinic Name") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = place, onValueChange = { place = it }, label = { Text("Place") }, modifier = Modifier.fillMaxWidth())
 
-                OutlinedTextField(
-                    value = specialization,
-                    onValueChange = { specialization = it },
-                    label = { Text("Specialization") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
-                    value = qualification,
-                    onValueChange = { qualification = it },
-                    label = { Text("Qualification") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Text("Set Weekly Availability", style = MaterialTheme.typography.titleMedium)
 
-                OutlinedTextField(
-                    value = experience,
-                    onValueChange = { experience = it },
-                    label = { Text("Years of Experience") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                daysOfWeek.forEach { day ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(4.dp)) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(day, style = MaterialTheme.typography.titleSmall)
 
-                OutlinedTextField(
-                    value = clinicName,
-                    onValueChange = { clinicName = it },
-                    label = { Text("Clinic Name") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = place,
-                    onValueChange = { place = it },
-                    label = { Text("Place") },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                            SessionRowWithCustomTimePicker(
+                                label = "Morning",
+                                timeText = availabilityMap[day]?.value?.get("morning") ?: "Not Set",
+                                onTimeSelected = { formatted ->
+                                    availabilityMap[day]?.value = availabilityMap[day]?.value?.toMutableMap()?.apply {
+                                        this["morning"] = formatted
+                                    } ?: mapOf("morning" to formatted)
+                                }
+                            )
+
+                            Spacer(Modifier.height(8.dp))
+
+                            SessionRowWithCustomTimePicker(
+                                label = "Afternoon",
+                                timeText = availabilityMap[day]?.value?.get("afternoon") ?: "Not Set",
+                                onTimeSelected = { formatted ->
+                                    availabilityMap[day]?.value = availabilityMap[day]?.value?.toMutableMap()?.apply {
+                                        this["afternoon"] = formatted
+                                    } ?: mapOf("afternoon" to formatted)
+                                }
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
                     onClick = {
-
                         if (name.text.isBlank() || specialization.text.isBlank() || qualification.text.isBlank()
                             || experience.text.isBlank() || imageUri == null || clinicName.text.isBlank() || place.text.isBlank()
                         ) {
-                            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
                         } else {
                             isUploading = true
                             scope.launch {
                                 try {
-                                    uploadDoctorProfile(
-                                        uid = uid,
-                                        name = name.text,
-                                        specialization = specialization.text,
-                                        qualification = qualification.text,
-                                        clinicName = clinicName.text,
-                                        place = place.text,
-                                        experience = experience.text,
-                                        imageUri = imageUri!!
+                                    val availabilityData = availabilityMap.mapValues { it.value.value }
+                                    uploadDoctorProfileWithAvailability(
+                                        uid,
+                                        name.text,
+                                        specialization.text,
+                                        qualification.text,
+                                        clinicName.text,
+                                        place.text,
+                                        experience.text,
+                                        imageUri!!,
+                                        availabilityData
                                     )
-                                    Toast.makeText(context, "Profile saved", Toast.LENGTH_SHORT)
-                                        .show()
-                                    navController.navigate(BeforeLoginScreensNavigationObject.HOME_SCREEN) {   // Or whatever screen you want to go to
-                                        popUpTo(BeforeLoginScreensNavigationObject.DOCTOR_PROFILE_SCREEN) { inclusive = true }  // optional: clears profile screen from back stack
+                                    Toast.makeText(context, "Profile saved", Toast.LENGTH_SHORT).show()
+                                    navController.navigate(BeforeLoginScreensNavigationObject.HOME_SCREEN) {
+                                        popUpTo(BeforeLoginScreensNavigationObject.DOCTOR_PROFILE_SCREEN) { inclusive = true }
                                     }
-                                } catch (e: Exception)
-                                {
-                                    Toast.makeText(
-                                        context,
-                                        "Failed: ${e.message}",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                                finally {
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
+                                } finally {
                                     isUploading = false
                                 }
                             }
                         }
-
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -183,13 +225,7 @@ fun DoctorProfileScreen(navController: NavController) {
 }
 
 
-suspend fun uploadImageToStorage(uid: String, imageUri: Uri): String {
-    val ref = FirebaseStorage.getInstance().reference.child("doctor_profile_pics/$uid.jpg")
-    ref.putFile(imageUri).await()
-    return ref.downloadUrl.await().toString()
-}
-
-suspend fun uploadDoctorProfile(
+suspend fun uploadDoctorProfileWithAvailability(
     uid: String,
     name: String,
     specialization: String,
@@ -197,10 +233,12 @@ suspend fun uploadDoctorProfile(
     clinicName: String,
     place: String,
     experience: String,
-    imageUri: Uri
-): Boolean {
+    imageUri: Uri,
+    availabilityMap: Map<String, Map<String, String>>
+) {
     val db = FirebaseFirestore.getInstance()
     val imageUrl = uploadImageToStorage(uid, imageUri)
+
     val doctorMap = mapOf(
         "uid" to uid,
         "name" to name,
@@ -209,8 +247,90 @@ suspend fun uploadDoctorProfile(
         "clinicName" to clinicName,
         "place" to place,
         "experience" to experience,
-        "profileImageUrl" to imageUrl
+        "profileImageUrl" to imageUrl,
+        "availability" to availabilityMap
     )
+
     db.collection("doctors").document(uid).set(doctorMap).await()
-    return true
 }
+
+
+
+@Composable
+fun SessionRowWithCustomTimePicker(
+    label: String,
+    timeText: String,
+    onTimeSelected: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val formatter = SimpleDateFormat("h:mm a", Locale.getDefault())
+
+    var isSelected by remember { mutableStateOf(timeText != "Not Set") }
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            onClick = {
+                if (isSelected) {
+                    // Toggle off: Unset
+                    onTimeSelected("Not Set")
+                    isSelected = false
+                } else {
+                    // Toggle on: Show picker
+                    showTimePicker(context) { startHour, startMinute ->
+                        showTimePicker(context) { endHour, endMinute ->
+                            val start = formatter.format(Calendar.getInstance().apply {
+                                set(Calendar.HOUR_OF_DAY, startHour)
+                                set(Calendar.MINUTE, startMinute)
+                            }.time)
+
+                            val end = formatter.format(Calendar.getInstance().apply {
+                                set(Calendar.HOUR_OF_DAY, endHour)
+                                set(Calendar.MINUTE, endMinute)
+                            }.time)
+
+                            onTimeSelected("$start - $end")
+                            isSelected = true
+                        }
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isSelected) Color(0xFF4CAF50) else MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Icon(
+                imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.Notifications,
+                contentDescription = null
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(label)
+        }
+
+        Text(timeText, modifier = Modifier.padding(start = 8.dp))
+    }
+}
+
+
+
+fun showTimePicker(context: Context, onTimeSelected: (hour: Int, minute: Int) -> Unit) {
+    val calendar = Calendar.getInstance()
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    val minute = calendar.get(Calendar.MINUTE)
+
+    TimePickerDialog(
+        context,
+        { _, selectedHour, selectedMinute ->
+            onTimeSelected(selectedHour, selectedMinute)
+        },
+        hour,
+        minute,
+        false
+    ).show()
+}
+

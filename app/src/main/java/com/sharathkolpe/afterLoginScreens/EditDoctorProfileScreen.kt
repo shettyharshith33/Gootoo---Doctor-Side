@@ -61,6 +61,14 @@ fun EditDoctorProfileScreen(navController: NavController) {
     var existingImageUrl by remember { mutableStateOf<String?>(null) }
     var isUploading by remember { mutableStateOf(false) }
 
+    // Availability State
+    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    val availabilityMap = remember {
+        daysOfWeek.associateWith {
+            mutableStateOf(mapOf("morning" to "Not Set", "afternoon" to "Not Set"))
+        }
+    }
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
         imageUri = it
     }
