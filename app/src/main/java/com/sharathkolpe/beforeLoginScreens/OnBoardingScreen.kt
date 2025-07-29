@@ -299,8 +299,6 @@ fun LoadingAnimation() {
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
-
-
         val lottieUrl =
             "https://firebasestorage.googleapis.com/v0/b/gootoo-13293.firebasestorage.app/o/Animations%2Floading_doctor.json?alt=media&token=69a4f774-21d9-4369-b25a-be9971bb27d2"
         val composition by rememberLottieComposition(LottieCompositionSpec.Url(lottieUrl))
@@ -313,7 +311,7 @@ fun LoadingAnimation() {
                     iterations = LottieConstants.IterateForever,
                     modifier = Modifier.size(200.dp)
                 )
-                Text("Please Wait..Sending OTP",
+                Text("Loading, Please Wait..",
                     modifier = Modifier.shimmer(),
                     color = gootooThemeBlue,
                     fontWeight = FontWeight.Bold,

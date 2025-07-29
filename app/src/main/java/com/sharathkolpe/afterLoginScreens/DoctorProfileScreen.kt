@@ -26,6 +26,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,7 +50,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -57,6 +61,10 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.sharathkolpe.beforeLoginScreens.LoadingAnimation
+import com.sharathkolpe.gootooDS.ui.theme.gootooThemeBlue
+import com.sharathkolpe.gootooDS.ui.theme.myGrey
+import com.sharathkolpe.gootooDS.ui.theme.poppinsFontFamily
 import com.sharathkolpe.utils.BeforeLoginScreensNavigationObject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -70,7 +78,6 @@ suspend fun uploadImageToStorage(uid: String, imageUri: Uri): String {
     ref.putFile(imageUri).await()
     return ref.downloadUrl.await().toString()
 }
-
 
 
 @Composable
@@ -89,8 +96,13 @@ fun DoctorProfileScreen(navController: NavController) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var isUploading by remember { mutableStateOf(false) }
 
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
+
     // Availability State
-    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    val daysOfWeek =
+        listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     val availabilityMap = remember {
         daysOfWeek.associateWith {
             mutableStateOf(mapOf("morning" to "Not Set", "afternoon" to "Not Set"))
@@ -104,20 +116,36 @@ fun DoctorProfileScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        contentAlignment = Alignment.TopCenter
+            .background(Color.White)
+            .verticalScroll(
+                rememberScrollState()
+            )
+            .padding(
+                if (isUploading) {
+                    0.dp
+                } else {
+                    16.dp
+                }
+            ),
+        contentAlignment =
+            if (isUploading) {
+                Alignment.Center
+            } else {
+                Alignment.TopCenter
+            }
     ) {
         if (isUploading) {
-            CircularProgressIndicator()
+            LoadingAnimation()
         } else {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
 
                 Box(
                     modifier = Modifier
                         .size(120.dp)
                         .clip(CircleShape)
-                        .background(Color.LightGray)
+                        .background(myGrey)
                         .clickable { launcher.launch("image/*") },
                     contentAlignment = Alignment.Center
                 ) {
@@ -131,36 +159,118 @@ fun DoctorProfileScreen(navController: NavController) {
                             contentScale = ContentScale.Crop
                         )
                     } else {
-                        Text("Upload Image", color = Color.DarkGray)
+                        Text(
+                            "Upload Image \uD83D\uDD87\uFE0F",
+                            color = Color.DarkGray,
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = specialization, onValueChange = { specialization = it }, label = { Text("Specialization") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = qualification, onValueChange = { qualification = it }, label = { Text("Qualification") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = experience, onValueChange = { experience = it }, label = { Text("Experience") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = clinicName, onValueChange = { clinicName = it }, label = { Text("Clinic Name") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = place, onValueChange = { place = it }, label = { Text("Place") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = {
+                        Text(
+                            "Name",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Light
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = specialization,
+                    onValueChange = { specialization = it },
+                    label = {
+                        Text(
+                            "Specialization",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Light
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = qualification,
+                    onValueChange = { qualification = it },
+                    label = {
+                        Text(
+                            "Qualification",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Light
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = experience,
+                    onValueChange = { experience = it },
+                    label = {
+                        Text(
+                            "Experience",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Light
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = clinicName,
+                    onValueChange = { clinicName = it },
+                    label = {
+                        Text(
+                            "Clinic Name",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Light
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = place,
+                    onValueChange = { place = it },
+                    label = {
+                        Text(
+                            "Place",
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.Light
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Set Weekly Availability", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "Set Weekly Availability",
+                    fontFamily = poppinsFontFamily, style = MaterialTheme.typography.titleMedium
+                )
 
                 daysOfWeek.forEach { day ->
                     Spacer(modifier = Modifier.height(8.dp))
-                    Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(4.dp)) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            Text(day, style = MaterialTheme.typography.titleSmall)
+                            Text(
+                                day, style = MaterialTheme.typography.titleSmall,
+                                fontFamily = poppinsFontFamily,
+                                fontWeight = FontWeight.SemiBold
+                            )
 
                             SessionRowWithCustomTimePicker(
                                 label = "Morning",
                                 timeText = availabilityMap[day]?.value?.get("morning") ?: "Not Set",
                                 onTimeSelected = { formatted ->
-                                    availabilityMap[day]?.value = availabilityMap[day]?.value?.toMutableMap()?.apply {
-                                        this["morning"] = formatted
-                                    } ?: mapOf("morning" to formatted)
+                                    availabilityMap[day]?.value =
+                                        availabilityMap[day]?.value?.toMutableMap()?.apply {
+                                            this["morning"] = formatted
+                                        } ?: mapOf("morning" to formatted)
                                 }
                             )
 
@@ -168,11 +278,13 @@ fun DoctorProfileScreen(navController: NavController) {
 
                             SessionRowWithCustomTimePicker(
                                 label = "Afternoon",
-                                timeText = availabilityMap[day]?.value?.get("afternoon") ?: "Not Set",
+                                timeText = availabilityMap[day]?.value?.get("afternoon")
+                                    ?: "Not Set",
                                 onTimeSelected = { formatted ->
-                                    availabilityMap[day]?.value = availabilityMap[day]?.value?.toMutableMap()?.apply {
-                                        this["afternoon"] = formatted
-                                    } ?: mapOf("afternoon" to formatted)
+                                    availabilityMap[day]?.value =
+                                        availabilityMap[day]?.value?.toMutableMap()?.apply {
+                                            this["afternoon"] = formatted
+                                        } ?: mapOf("afternoon" to formatted)
                                 }
                             )
                         }
@@ -182,16 +294,19 @@ fun DoctorProfileScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
+                    colors = ButtonDefaults.buttonColors().copy(containerColor = gootooThemeBlue),
                     onClick = {
                         if (name.text.isBlank() || specialization.text.isBlank() || qualification.text.isBlank()
                             || experience.text.isBlank() || imageUri == null || clinicName.text.isBlank() || place.text.isBlank()
                         ) {
-                            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
+                                .show()
                         } else {
                             isUploading = true
                             scope.launch {
                                 try {
-                                    val availabilityData = availabilityMap.mapValues { it.value.value }
+                                    val availabilityData =
+                                        availabilityMap.mapValues { it.value.value }
                                     uploadDoctorProfileWithAvailability(
                                         uid,
                                         name.text,
@@ -203,12 +318,19 @@ fun DoctorProfileScreen(navController: NavController) {
                                         imageUri!!,
                                         availabilityData
                                     )
-                                    Toast.makeText(context, "Profile saved", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Profile saved", Toast.LENGTH_SHORT)
+                                        .show()
                                     navController.navigate(BeforeLoginScreensNavigationObject.HOME_SCREEN) {
-                                        popUpTo(BeforeLoginScreensNavigationObject.DOCTOR_PROFILE_SCREEN) { inclusive = true }
+                                        popUpTo(BeforeLoginScreensNavigationObject.DOCTOR_PROFILE_SCREEN) {
+                                            inclusive = true
+                                        }
                                     }
                                 } catch (e: Exception) {
-                                    Toast.makeText(context, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Failed: ${e.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 } finally {
                                     isUploading = false
                                 }
@@ -217,8 +339,14 @@ fun DoctorProfileScreen(navController: NavController) {
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Save Profile")
+                    Text(
+                        "Save Profile",
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
                 }
+                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
             }
         }
     }
@@ -253,7 +381,6 @@ suspend fun uploadDoctorProfileWithAvailability(
 
     db.collection("doctors").document(uid).set(doctorMap).await()
 }
-
 
 
 @Composable
@@ -301,21 +428,28 @@ fun SessionRowWithCustomTimePicker(
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isSelected) Color(0xFF4CAF50) else MaterialTheme.colorScheme.primary
+                containerColor = if (isSelected) Color(0xFF4CAF50) else gootooThemeBlue
             )
         ) {
             Icon(
-                imageVector = if (isSelected) Icons.Default.CheckCircle else Icons.Default.Notifications,
+                imageVector = if (isSelected) Icons.Default.Close else Icons.Default.DateRange,
                 contentDescription = null
             )
             Spacer(Modifier.width(6.dp))
-            Text(label)
+            Text(
+                if (isSelected) {
+                    "Cancel"
+                } else {
+                    label
+                },
+                fontFamily = poppinsFontFamily,
+                fontWeight = FontWeight.Light
+            )
         }
 
         Text(timeText, modifier = Modifier.padding(start = 8.dp))
     }
 }
-
 
 
 fun showTimePicker(context: Context, onTimeSelected: (hour: Int, minute: Int) -> Unit) {

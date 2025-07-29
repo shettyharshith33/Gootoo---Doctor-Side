@@ -16,9 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,14 +38,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.doctorapp.ui.SessionRowWithCustomTimePicker
 import com.example.doctorapp.ui.uploadImageToStorage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.core.ComponentProvider
+import com.sharathkolpe.beforeLoginScreens.LoadingAnimation
+import com.sharathkolpe.gootooDS.ui.theme.gootooThemeBlue
+import com.sharathkolpe.gootooDS.ui.theme.poppinsFontFamily
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -60,9 +72,12 @@ fun EditDoctorProfileScreen(navController: NavController) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var existingImageUrl by remember { mutableStateOf<String?>(null) }
     var isUploading by remember { mutableStateOf(false) }
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val screenHeight = configuration.screenHeightDp.dp
 
-    // Availability State
-    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    val daysOfWeek =
+        listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     val availabilityMap = remember {
         daysOfWeek.associateWith {
             mutableStateOf(mapOf("morning" to "Not Set", "afternoon" to "Not Set"))
@@ -83,21 +98,39 @@ fun EditDoctorProfileScreen(navController: NavController) {
         clinicName = TextFieldValue(doc.getString("clinicName") ?: "")
         place = TextFieldValue(doc.getString("place") ?: "")
         existingImageUrl = doc.getString("profileImageUrl")
-    }
 
+        val availability = doc.get("availability") as? Map<*, *>
+        availability?.forEach { (day, sessionMap) ->
+            if (day is String && sessionMap is Map<*, *>) {
+                val morning = sessionMap["morning"] as? String ?: "Not Set"
+                val afternoon = sessionMap["afternoon"] as? String ?: "Not Set"
+                availabilityMap[day]?.value = mapOf("morning" to morning, "afternoon" to afternoon)
+            }
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
+            .background(Color.White)
+            .padding(
+                if (isUploading) {
+                    0.dp
+                } else {
+                    16.dp
+                }
+            )
+            .verticalScroll(rememberScrollState()), contentAlignment = if (isUploading) {
+            Alignment.Center
+        } else {
+            Alignment.TopCenter
+        }
     ) {
         if (isUploading) {
-            CircularProgressIndicator()
+            LoadingAnimation()
         } else {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally)
+            {
+                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
                 Box(
                     modifier = Modifier
                         .size(120.dp)
@@ -130,7 +163,11 @@ fun EditDoctorProfileScreen(navController: NavController) {
                         }
 
                         else -> {
-                            Text("Upload", color = Color.DarkGray)
+                            Text(
+                                "Upload", color = Color.DarkGray,
+                                fontFamily = poppinsFontFamily,
+                                fontWeight = FontWeight.SemiBold
+                            )
                         }
                     }
                 }
@@ -157,7 +194,13 @@ fun EditDoctorProfileScreen(navController: NavController) {
                                 5 -> place = it
                             }
                         },
-                        label = { Text(label) },
+                        label = {
+                            Text(
+                                label,
+                                fontFamily = poppinsFontFamily,
+                                fontWeight = FontWeight.Light
+                            )
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
@@ -166,11 +209,59 @@ fun EditDoctorProfileScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
+                Text(
+                    "Edit Weekly Availability",
+                    fontFamily = poppinsFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                daysOfWeek.forEach { day ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Column {
+                        Text(
+                            day, color = Color.DarkGray,
+                            fontFamily = poppinsFontFamily,
+                            fontWeight = FontWeight.SemiBold
+                        )
+
+                        SessionRowWithCustomTimePicker(
+                            label = "Morning",
+                            timeText = availabilityMap[day]?.value?.get("morning") ?: "Not Set",
+                            onTimeSelected = { formatted ->
+                                availabilityMap[day]?.value =
+                                    availabilityMap[day]?.value?.toMutableMap()?.apply {
+                                        this["morning"] = formatted
+                                    } ?: mapOf("morning" to formatted)
+                            })
+
+                        Divider(
+                            color = gootooThemeBlue,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+
+
+                        SessionRowWithCustomTimePicker(
+                            label = "Afternoon",
+                            timeText = availabilityMap[day]?.value?.get("afternoon") ?: "Not Set",
+                            onTimeSelected = { formatted ->
+                                availabilityMap[day]?.value =
+                                    availabilityMap[day]?.value?.toMutableMap()?.apply {
+                                        this["afternoon"] = formatted
+                                    } ?: mapOf("afternoon" to formatted)
+                            })
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Button(
+                    colors = ButtonDefaults.buttonColors().copy(
+                        containerColor = gootooThemeBlue
+                    ),
                     onClick = {
-                        if (name.text.isBlank() || specialization.text.isBlank() || qualification.text.isBlank()
-                            || experience.text.isBlank() || clinicName.text.isBlank() || place.text.isBlank()
-                        ) {
+                        if (name.text.isBlank() || specialization.text.isBlank() || qualification.text.isBlank() || experience.text.isBlank() || clinicName.text.isBlank() || place.text.isBlank()) {
                             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
                                 .show()
                             return@Button
@@ -183,6 +274,9 @@ fun EditDoctorProfileScreen(navController: NavController) {
                                     uploadImageToStorage(uid, it)
                                 } ?: existingImageUrl
 
+                                val updatedAvailabilityMap =
+                                    availabilityMap.mapValues { it.value.value }
+
                                 val doctorMap = mapOf(
                                     "uid" to uid,
                                     "name" to name.text,
@@ -191,14 +285,12 @@ fun EditDoctorProfileScreen(navController: NavController) {
                                     "clinicName" to clinicName.text,
                                     "place" to place.text,
                                     "experience" to experience.text,
-                                    "profileImageUrl" to finalImageUrl
+                                    "profileImageUrl" to finalImageUrl,
+                                    "availability" to updatedAvailabilityMap
                                 )
 
-                                FirebaseFirestore.getInstance()
-                                    .collection("doctors")
-                                    .document(uid)
-                                    .set(doctorMap)
-                                    .await()
+                                FirebaseFirestore.getInstance().collection("doctors").document(uid)
+                                    .set(doctorMap).await()
 
                                 Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT)
                                     .show()
@@ -210,11 +302,16 @@ fun EditDoctorProfileScreen(navController: NavController) {
                                 isUploading = false
                             }
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth()
+                    }, modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Update Profile")
+                    Text(
+                        "Update Profile",
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
                 }
+                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
             }
         }
     }
