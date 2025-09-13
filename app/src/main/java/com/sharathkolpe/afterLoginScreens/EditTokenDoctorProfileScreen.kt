@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -45,11 +43,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.doctorapp.ui.SessionRowWithCustomTimePicker
-import com.example.doctorapp.ui.uploadImageToStorage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.core.ComponentProvider
+import com.google.firebase.firestore.SetOptions
 import com.sharathkolpe.beforeLoginScreens.LoadingAnimation
 import com.sharathkolpe.gootooDS.ui.theme.gootooThemeBlue
 import com.sharathkolpe.gootooDS.ui.theme.poppinsFontFamily
@@ -57,7 +53,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 @Composable
-fun EditDoctorProfileScreen(navController: NavController) {
+fun EditTokenDoctorProfileScreen(navController: NavController) {
     val context = LocalContext.current
     val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
     val scope = rememberCoroutineScope()
@@ -72,6 +68,9 @@ fun EditDoctorProfileScreen(navController: NavController) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var existingImageUrl by remember { mutableStateOf<String?>(null) }
     var isUploading by remember { mutableStateOf(false) }
+    var availabilityType by remember { mutableStateOf("token") }
+    var address by remember { mutableStateOf(TextFieldValue("")) }
+    var contact by remember { mutableStateOf(TextFieldValue("")) }
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
@@ -95,6 +94,8 @@ fun EditDoctorProfileScreen(navController: NavController) {
         specialization = TextFieldValue(doc.getString("specialization") ?: "")
         qualification = TextFieldValue(doc.getString("qualification") ?: "")
         experience = TextFieldValue(doc.getString("experience") ?: "")
+        address = TextFieldValue(doc.getString("address") ?: "")
+        contact = TextFieldValue(doc.getString("contact") ?: "")
         clinicName = TextFieldValue(doc.getString("clinicName") ?: "")
         place = TextFieldValue(doc.getString("place") ?: "")
         existingImageUrl = doc.getString("profileImageUrl")
@@ -128,8 +129,7 @@ fun EditDoctorProfileScreen(navController: NavController) {
         if (isUploading) {
             LoadingAnimation()
         } else {
-            Column(horizontalAlignment = Alignment.CenterHorizontally)
-            {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(screenHeight * 0.05f))
                 Box(
                     modifier = Modifier
@@ -164,7 +164,8 @@ fun EditDoctorProfileScreen(navController: NavController) {
 
                         else -> {
                             Text(
-                                "Upload", color = Color.DarkGray,
+                                "Upload",
+                                color = Color.DarkGray,
                                 fontFamily = poppinsFontFamily,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -180,11 +181,12 @@ fun EditDoctorProfileScreen(navController: NavController) {
                     "Qualification" to qualification,
                     "Years of Experience" to experience,
                     "Clinic Name" to clinicName,
-                    "Place" to place
+                    "Place" to place,
+                    "Address" to address,
+                    "Contact" to contact
                 ).forEachIndexed { index, (label, state) ->
                     OutlinedTextField(
-                        value = state,
-                        onValueChange = {
+                        value = state, onValueChange = {
                             when (index) {
                                 0 -> name = it
                                 1 -> specialization = it
@@ -192,16 +194,14 @@ fun EditDoctorProfileScreen(navController: NavController) {
                                 3 -> experience = it
                                 4 -> clinicName = it
                                 5 -> place = it
+                                6 -> contact = it
+                                7 -> address = it
                             }
-                        },
-                        label = {
+                        }, label = {
                             Text(
-                                label,
-                                fontFamily = poppinsFontFamily,
-                                fontWeight = FontWeight.Light
+                                label, fontFamily = poppinsFontFamily, fontWeight = FontWeight.Light
                             )
-                        },
-                        modifier = Modifier
+                        }, modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                     )
@@ -220,7 +220,8 @@ fun EditDoctorProfileScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Column {
                         Text(
-                            day, color = Color.DarkGray,
+                            day,
+                            color = Color.DarkGray,
                             fontFamily = poppinsFontFamily,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -259,9 +260,16 @@ fun EditDoctorProfileScreen(navController: NavController) {
                 Button(
                     colors = ButtonDefaults.buttonColors().copy(
                         containerColor = gootooThemeBlue
-                    ),
-                    onClick = {
-                        if (name.text.isBlank() || specialization.text.isBlank() || qualification.text.isBlank() || experience.text.isBlank() || clinicName.text.isBlank() || place.text.isBlank()) {
+                    ), onClick = {
+                        if (name.text.isBlank() ||
+                            specialization.text.isBlank() ||
+                            qualification.text.isBlank() ||
+                            experience.text.isBlank() ||
+                            clinicName.text.isBlank() ||
+                            place.text.isBlank() ||
+                            address.text.isBlank() ||
+                            contact.text.isBlank()
+                        ) {
                             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT)
                                 .show()
                             return@Button
@@ -286,12 +294,18 @@ fun EditDoctorProfileScreen(navController: NavController) {
                                     "place" to place.text,
                                     "experience" to experience.text,
                                     "profileImageUrl" to finalImageUrl,
-                                    "availability" to updatedAvailabilityMap
+                                    "availability" to updatedAvailabilityMap,
+                                    "address" to address.text,
+                                    "contact" to contact.text
                                 )
 
-                                FirebaseFirestore.getInstance().collection("doctors").document(uid)
+                                FirebaseFirestore.getInstance().collection("doctors")
+                                    .document(uid)
                                     .set(doctorMap).await()
-
+                                FirebaseFirestore.getInstance()
+                                    .collection("doctors")
+                                    .document(uid)
+                                    .set(mapOf("availabilityType" to "token"), SetOptions.merge())
                                 Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT)
                                     .show()
                                 navController.popBackStack()

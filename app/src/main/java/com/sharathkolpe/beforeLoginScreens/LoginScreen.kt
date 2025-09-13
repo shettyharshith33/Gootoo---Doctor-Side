@@ -260,7 +260,7 @@ fun LoginScreen(
                                                     popUpTo(0)
                                                 }
                                             } else {
-                                                navController.navigate(BeforeLoginScreensNavigationObject.DOCTOR_PROFILE_SCREEN) {
+                                                navController.navigate(BeforeLoginScreensNavigationObject.AVAILABILITY_TYPE_SELECTION_SCREEN) {
                                                     popUpTo(0)
                                                 }
                                             }
